@@ -1,39 +1,25 @@
-# =========================
-# Build stage
-# =========================
+# ---------- Build stage ----------
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy solution
-COPY Notes.sln ./
-
-# Copy project files (EXACTOS)
-COPY Application/Notes.Application.csproj Application/
-COPY Domain/Notes.Domain.csproj Domain/
-COPY Infrastructure/Notes.Infrastructure.csproj Infrastructure/
-COPY NotesAPI/Notes.Api.csproj NotesAPI/
-
-# Restore dependencies
-RUN dotnet restore
-
-# Copy everything else
+# Copiamos todo el código
 COPY . .
 
-# Build and publish API
-WORKDIR /src/NotesAPI
-RUN dotnet publish Notes.Api.csproj -c Release -o /app/publish
+# Restauramos dependencias
+RUN dotnet restore
 
-# =========================
-# Runtime stage
-# =========================
+# Publicamos en modo Release
+RUN dotnet publish -c Release -o /app/publish
+
+# ---------- Runtime stage ----------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
-ENV ASPNETCORE_URLS=http://+:8080
-ENV ASPNETCORE_ENVIRONMENT=Development   
-
+# Copiamos el output del build
 COPY --from=build /app/publish .
 
+# Puerto expuesto por la API
 EXPOSE 8080
 
+# IMPORTANTE: nombre del DLL principal
 ENTRYPOINT ["dotnet", "Notes.Api.dll"]

@@ -1,32 +1,26 @@
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: notes-sql
+  db:
+    image: postgres:16
+    container_name: notes-postgres
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
+      POSTGRES_DB: notesdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - notes_sql_data:/var/opt/mssql
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -Q 'SELECT 1' -C || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-      start_period: 20s
+      - postgres_data:/var/lib/postgresql/data
 
   api:
     build: .
     container_name: notes-api
     depends_on:
-      sqlserver:
-        condition: service_healthy
+      - db
     environment:
       ASPNETCORE_URLS: "http://+:8080"
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=NotesDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=notesdb;Username=postgres;Password=postgres"
     ports:
       - "8080:8080"
 
 volumes:
-  notes_sql_data:
+  postgres_data:

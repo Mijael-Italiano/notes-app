@@ -36,21 +36,18 @@ builder.Services.AddScoped<NoteService>();
 
 var app = builder.Build();
 
-// 🔽🔽🔽 ACÁ VA ESTO 🔽🔽🔽
+// Migraciones automáticas
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<NotesDbContext>();
     db.Database.Migrate();
 }
-// 🔼🔼🔼 FIN 🔼🔼🔼
+
+// 🔥 Swagger SIEMPRE habilitado
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 // app.UseHttpsRedirection();
 
 app.UseCors();

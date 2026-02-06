@@ -23,6 +23,9 @@ namespace Notes.Application
             if (string.IsNullOrWhiteSpace(title))
                 throw new InvalidOperationException("El título de la nota es obligatorio.");
 
+            if (await _noteRepository.TitleExistsAsync(title))
+                throw new InvalidOperationException("Ya existe una nota con ese título.");
+
             var note = new Note(title, content);
             await _noteRepository.AddAsync(note);
         }
@@ -44,6 +47,9 @@ namespace Notes.Application
 
             var note = await _noteRepository.GetByIdAsync(noteId)
                 ?? throw new InvalidOperationException("La nota no existe.");
+
+            if (await _noteRepository.TitleExistsAsync(newTitle, noteId))
+                throw new InvalidOperationException("Ya existe una nota con ese título.");
 
             note.UpdateTitle(newTitle);
 

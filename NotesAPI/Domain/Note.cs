@@ -12,6 +12,10 @@ namespace Notes.Domain
 
         public string Title { get; set; }
 
+        public int? CategoryId { get; private set; }
+
+        public Category? Category { get; private set; }
+
         public string? Content { get; set; }
 
         public bool IsArchived { get; set; }
@@ -55,6 +59,22 @@ namespace Notes.Domain
             IsArchived = false;
             ModifiedAt = DateTime.UtcNow;
         }
+
+        public void AssignCategory(Category category)
+        {
+            Category = category;
+            CategoryId = category.Id;
+            ModifiedAt = DateTime.UtcNow;
+        }
+
+        public void RemoveCategory()
+        {
+            Category = null;
+            CategoryId = null;
+            ModifiedAt = DateTime.UtcNow;
+        }
+
+
     }
 
 }

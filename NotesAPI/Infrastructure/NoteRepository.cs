@@ -55,5 +55,13 @@ namespace Notes.Infrastructure
             _context.Notes.Remove(note);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> TitleExistsAsync(string title, int? excludeNoteId = null)
+        {
+            return await _context.Notes
+                .Where(n => n.Title == title)
+                .Where(n => excludeNoteId == null || n.Id != excludeNoteId)
+                .AnyAsync();
+        }
     }
 }

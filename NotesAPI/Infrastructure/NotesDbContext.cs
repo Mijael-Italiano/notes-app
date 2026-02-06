@@ -12,6 +12,21 @@ namespace Notes.Infrastructure
     public class NotesDbContext : DbContext
     {
         public NotesDbContext(DbContextOptions<NotesDbContext> options) : base(options) { }
+
         public DbSet<Note> Notes { get; set; }
+        public DbSet<Category> Categories { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Note>()
+                .HasOne(n => n.Category)
+                .WithMany()
+                .HasForeignKey(n => n.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Category>()
+                .Property(c => c.Name)
+                .IsRequired();
+        }
     }
 }

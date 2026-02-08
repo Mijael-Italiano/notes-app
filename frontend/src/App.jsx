@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import NotesList from "./components/NotesList";
 import NoteEditor from "./components/NoteEditor";
 import ArchivedNotesList from "./components/ArchivedNotesList";
+
 import {
   getActiveNotes,
   getArchivedNotes,
@@ -13,6 +14,8 @@ import {
   unarchiveNote,
 } from "./services/notesApi";
 
+import { getCategories } from "./services/categoriesApi";
+
 function App() {
   /* =========================
      ESTADOS
@@ -20,7 +23,11 @@ function App() {
 
   const [notes, setNotes] = useState([]);
   const [archivedNotes, setArchivedNotes] = useState([]);
+  const [categories, setCategories] = useState([]);
+
   const [selectedNote, setSelectedNote] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
 
@@ -29,18 +36,32 @@ function App() {
   ========================= */
 
   useEffect(() => {
-    loadNotes();
+    loadInitialData();
   }, []);
 
-  async function loadNotes() {
+  async function loadInitialData() {
     setLoading(true);
+    try {
+      const [notesData, categoriesData] = await Promise.all([
+        getActiveNotes(),
+        getCategories(),
+      ]);
+
+      setNotes(notesData);
+      setCategories(categoriesData);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function loadNotes() {
     try {
       const data = await getActiveNotes();
       setNotes(data);
     } catch (error) {
       alert(error.message);
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -122,6 +143,14 @@ function App() {
   }
 
   /* =========================
+     FILTRO POR CATEGORÍA
+  ========================= */
+
+  const filteredNotes = selectedCategoryId
+    ? notes.filter((n) => n.categoryId === selectedCategoryId)
+    : notes;
+
+  /* =========================
      RENDER
   ========================= */
 
@@ -140,7 +169,7 @@ function App() {
       </button>
 
       <div style={{ display: "flex", height: "calc(100% - 50px)" }}>
-        {/* PANEL IZQUIERDO (un poco más ancho) */}
+        {/* PANEL IZQUIERDO */}
         <div
           style={{
             width: "32%",
@@ -155,7 +184,10 @@ function App() {
             />
           ) : (
             <NotesList
-              notes={notes}
+              notes={filteredNotes}
+              categories={categories}
+              selectedCategoryId={selectedCategoryId}
+              onCategoryFilterChange={setSelectedCategoryId}
               selectedNoteId={selectedNote?.id}
               onSelect={setSelectedNote}
               onDelete={handleDelete}
@@ -164,7 +196,7 @@ function App() {
           )}
         </div>
 
-        {/* PANEL DERECHO (más ancho real) */}
+        {/* PANEL DERECHO */}
         <div
           style={{
             width: "68%",

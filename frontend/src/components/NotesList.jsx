@@ -1,5 +1,10 @@
+import { updateNoteCategory } from "../services/notesApi";
+
 function NotesList({
   notes,
+  categories,
+  selectedCategoryId,
+  onCategoryFilterChange,
   selectedNoteId,
   onSelect,
   onDelete,
@@ -8,6 +13,25 @@ function NotesList({
   return (
     <div style={{ borderRight: "1px solid #ddd", padding: "10px" }}>
       <h3>Notas</h3>
+
+      {/* FILTRO POR CATEGORÍA */}
+      <div style={{ marginBottom: "10px" }}>
+        <select
+          value={selectedCategoryId ?? ""}
+          onChange={(e) => {
+            const value =
+              e.target.value === "" ? null : Number(e.target.value);
+            onCategoryFilterChange(value);
+          }}
+        >
+          <option value="">Todas las categorías</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {notes.length === 0 && (
         <p style={{ color: "#666" }}>No hay notas</p>
@@ -26,14 +50,40 @@ function NotesList({
                 note.id === selectedNoteId ? "#eef" : "#fff",
               border: "1px solid #ccc",
               borderRadius: "4px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
             }}
           >
-            <span>{note.title}</span>
+            {/* TÍTULO */}
+            <div style={{ fontWeight: "bold" }}>{note.title}</div>
 
-            <div style={{ display: "flex", gap: "6px" }}>
+            {/* CATEGORÍA DE LA NOTA */}
+            <div style={{ marginTop: "4px" }}>
+              <select
+                value={note.categoryId ?? ""}
+                onClick={(e) => e.stopPropagation()}
+                onChange={async (e) => {
+                  const categoryId =
+                    e.target.value === "" ? null : Number(e.target.value);
+
+                  await updateNoteCategory(note.id, categoryId);
+                }}
+              >
+                <option value="">Sin categoría</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* ACCIONES */}
+            <div
+              style={{
+                display: "flex",
+                gap: "6px",
+                marginTop: "6px",
+              }}
+            >
               {/* ARCHIVAR */}
               <button
                 onClick={(e) => {

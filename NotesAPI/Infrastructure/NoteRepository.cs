@@ -22,6 +22,7 @@ namespace Notes.Infrastructure
         public async Task<List<Note>> GetActiveAsync()
         {
             return await _context.Notes
+                .Include(n=>n.Category)
                 .Where(n => !n.IsArchived)
                 .ToListAsync();
         }
@@ -29,6 +30,7 @@ namespace Notes.Infrastructure
         public async Task<List<Note>> GetArchivedAsync()
         {
             return await _context.Notes
+                .Include(n => n.Category)
                 .Where(n => n.IsArchived)
                 .ToListAsync();
         }

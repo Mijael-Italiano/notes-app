@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Notes.Application;
-using Notes.Domain;
-using Notes.Api.Dtos;
+using Notes.Api.Dtos.Note;
+using Notes.Api.Dtos.Category;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Notes.Api.Controllers
 {
@@ -18,25 +19,78 @@ namespace Notes.Api.Controllers
             _noteService = noteService;
         }
 
+        // =========================
+        // CREATE
+        // =========================
         [HttpPost]
         public async Task<IActionResult> Create(CreateNoteRequest request)
         {
-            await _noteService.CreateAsync(request.Title, request.Content);
+            await _noteService.CreateAsync(
+                request.Title,
+                request.Content,
+                request.CategoryId
+            );
+
             return Ok();
         }
 
+        // =========================
+        // GET ACTIVE
+        // =========================
         [HttpGet("active")]
-        public async Task<ActionResult<List<Note>>> GetActive()
+        public async Task<ActionResult<IEnumerable<NoteResponse>>> GetActive()
         {
-            return Ok(await _noteService.GetActiveAsync());
+            var notes = await _noteService.GetActiveAsync();
+
+            var response = notes.Select(n => new NoteResponse
+            {
+                Id = n.Id,
+                Title = n.Title,
+                Content = n.Content,
+                IsArchived = n.IsArchived,
+                CreatedAt = n.CreatedAt,
+                Category = n.Category == null
+                    ? null
+                    : new CategoryResponse
+                    {
+                        Id = n.Category.Id,
+                        Name = n.Category.Name
+                    }
+            });
+
+            return Ok(response);
         }
 
+        // =========================
+        // GET ARCHIVED
+        // =========================
         [HttpGet("archived")]
-        public async Task<ActionResult<List<Note>>> GetArchived()
+        public async Task<ActionResult<IEnumerable<NoteResponse>>> GetArchived()
         {
-            return Ok(await _noteService.GetArchivedAsync());
+            var notes = await _noteService.GetArchivedAsync();
+
+            var response = notes.Select(n => new NoteResponse
+            {
+                Id = n.Id,
+                Title = n.Title,
+                Content = n.Content,
+                IsArchived = n.IsArchived,
+                CreatedAt = n.CreatedAt,
+                Category = n.Category == null
+                    ? null
+                    : new CategoryResponse
+                    {
+                        Id = n.Category.Id,
+                        Name = n.Category.Name
+                    }
+            });
+
+            return Ok(response);
         }
 
+        // =========================
+        // UPDATE
+        // =========================
         [HttpPut("{id}/title")]
         public async Task<IActionResult> UpdateTitle(int id, UpdateTitleRequest request)
         {
@@ -51,6 +105,16 @@ namespace Notes.Api.Controllers
             return Ok();
         }
 
+        [HttpPut("{id}/category")]
+        public async Task<IActionResult> UpdateCategory(int id, UpdateNoteCategoryRequest request)
+        {
+            await _noteService.UpdateCategoryAsync(id, request.CategoryId);
+            return Ok();
+        }
+
+        // =========================
+        // ARCHIVE
+        // =========================
         [HttpPost("{id}/archive")]
         public async Task<IActionResult> Archive(int id)
         {
@@ -65,6 +129,9 @@ namespace Notes.Api.Controllers
             return Ok();
         }
 
+        // =========================
+        // DELETE
+        // =========================
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

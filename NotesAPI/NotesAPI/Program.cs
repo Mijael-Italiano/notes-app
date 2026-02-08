@@ -34,6 +34,9 @@ builder.Services.AddDbContext<NotesDbContext>(options =>
 builder.Services.AddScoped<NoteRepository>();
 builder.Services.AddScoped<NoteService>();
 
+builder.Services.AddScoped<CategoryRepository>();
+builder.Services.AddScoped<CategoryService>();
+
 var app = builder.Build();
 
 // Migraciones automáticas

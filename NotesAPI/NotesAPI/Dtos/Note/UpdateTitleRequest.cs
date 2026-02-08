@@ -1,4 +1,4 @@
-﻿namespace Notes.Api.Dtos
+﻿namespace Notes.Api.Dtos.Note
 {
     public class UpdateTitleRequest
     {

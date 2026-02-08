@@ -65,6 +65,24 @@ export async function updateNoteContent(id, content) {
 }
 
 /* =======================
+   ACTUALIZAR CATEGORÍA
+======================= */
+
+export async function updateNoteCategory(id, categoryId) {
+  const response = await fetch(`${API_BASE_URL}/${id}/category`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ categoryId }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al actualizar la categoría");
+  }
+}
+
+/* =======================
    ELIMINAR
 ======================= */
 

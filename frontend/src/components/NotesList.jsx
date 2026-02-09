@@ -1,5 +1,3 @@
-import { updateNoteCategory } from "../services/notesApi";
-
 function NotesList({
   notes,
   categories,
@@ -9,13 +7,13 @@ function NotesList({
   onSelect,
   onDelete,
   onArchive,
+  onCategoryChange,
 }) {
   return (
-    <div style={{ borderRight: "1px solid #ddd", padding: "10px" }}>
-      <h3>Notas</h3>
+    <div style={{ padding: "12px" }}>
+      <h3 style={{ marginBottom: "8px" }}>Notas</h3>
 
-      {/* FILTRO POR CATEGORÍA */}
-      <div style={{ marginBottom: "10px" }}>
+      <div style={{ marginBottom: "12px" }}>
         <select
           value={selectedCategoryId ?? ""}
           onChange={(e) => {
@@ -33,9 +31,7 @@ function NotesList({
         </select>
       </div>
 
-      {notes.length === 0 && (
-        <p style={{ color: "#666" }}>No hay notas</p>
-      )}
+      {notes.length === 0 && <p>No hay notas</p>}
 
       <ul style={{ listStyle: "none", padding: 0 }}>
         {notes.map((note) => (
@@ -43,28 +39,30 @@ function NotesList({
             key={note.id}
             onClick={() => onSelect(note)}
             style={{
-              padding: "8px",
-              marginBottom: "6px",
-              cursor: "pointer",
+              padding: "10px",
+              marginBottom: "10px",
               backgroundColor:
                 note.id === selectedNoteId ? "#eef" : "#fff",
               border: "1px solid #ccc",
-              borderRadius: "4px",
+              borderRadius: "6px",
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "12px",
             }}
           >
-            {/* TÍTULO */}
-            <div style={{ fontWeight: "bold" }}>{note.title}</div>
+            <div style={{ flex: 1 }}>
+              <strong>{note.title}</strong>
 
-            {/* CATEGORÍA DE LA NOTA */}
-            <div style={{ marginTop: "4px" }}>
               <select
                 value={note.categoryId ?? ""}
                 onClick={(e) => e.stopPropagation()}
-                onChange={async (e) => {
+                onChange={(e) => {
                   const categoryId =
-                    e.target.value === "" ? null : Number(e.target.value);
+                    e.target.value === ""
+                      ? null
+                      : Number(e.target.value);
 
-                  await updateNoteCategory(note.id, categoryId);
+                  onCategoryChange(note.id, categoryId);
                 }}
               >
                 <option value="">Sin categoría</option>
@@ -76,46 +74,23 @@ function NotesList({
               </select>
             </div>
 
-            {/* ACCIONES */}
-            <div
-              style={{
-                display: "flex",
-                gap: "6px",
-                marginTop: "6px",
-              }}
-            >
-              {/* ARCHIVAR */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onArchive(note);
                 }}
-                style={{
-                  background: "#3498db",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
               >
                 📦
               </button>
 
-              {/* ELIMINAR */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(note);
                 }}
-                style={{
-                  background: "#e74c3c",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
               >
-                X
+                ❌
               </button>
             </div>
           </li>

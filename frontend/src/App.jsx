@@ -12,9 +12,20 @@ import {
   deleteNote,
   archiveNote,
   unarchiveNote,
+  updateNoteCategory,
 } from "./services/notesApi";
 
 import { getCategories } from "./services/categoriesApi";
+
+/* =========================
+   NORMALIZACIÓN FRONT
+   ========================= */
+function normalizeNotes(notes) {
+  return notes.map((n) => ({
+    ...n,
+    categoryId: n.category ? n.category.id : null,
+  }));
+}
 
 function App() {
   /* =========================
@@ -47,7 +58,7 @@ function App() {
         getCategories(),
       ]);
 
-      setNotes(notesData);
+      setNotes(normalizeNotes(notesData));
       setCategories(categoriesData);
     } catch (error) {
       alert(error.message);
@@ -59,7 +70,7 @@ function App() {
   async function loadNotes() {
     try {
       const data = await getActiveNotes();
-      setNotes(data);
+      setNotes(normalizeNotes(data));
     } catch (error) {
       alert(error.message);
     }
@@ -68,7 +79,7 @@ function App() {
   async function loadArchivedNotes() {
     try {
       const data = await getArchivedNotes();
-      setArchivedNotes(data);
+      setArchivedNotes(normalizeNotes(data));
     } catch (error) {
       alert(error.message);
     }
@@ -142,6 +153,26 @@ function App() {
     }
   }
 
+  async function handleCategoryChange(noteId, categoryId) {
+    try {
+      await updateNoteCategory(noteId, categoryId);
+
+      setNotes((prev) =>
+        prev.map((n) =>
+          n.id === noteId ? { ...n, categoryId } : n
+        )
+      );
+
+      setSelectedNote((prev) =>
+        prev && prev.id === noteId
+          ? { ...prev, categoryId }
+          : prev
+      );
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
   /* =========================
      FILTRO POR CATEGORÍA
   ========================= */
@@ -156,7 +187,6 @@ function App() {
 
   return (
     <div style={{ height: "100vh", fontFamily: "Arial, sans-serif" }}>
-      {/* BOTÓN ARCHIVADAS */}
       <button
         onClick={() => {
           const next = !showArchived;
@@ -169,10 +199,10 @@ function App() {
       </button>
 
       <div style={{ display: "flex", height: "calc(100% - 50px)" }}>
-        {/* PANEL IZQUIERDO */}
         <div
           style={{
-            width: "32%",
+            flex: 1,
+            minWidth: 0,
             borderRight: "1px solid #ddd",
             overflowY: "auto",
           }}
@@ -192,33 +222,35 @@ function App() {
               onSelect={setSelectedNote}
               onDelete={handleDelete}
               onArchive={handleArchive}
+              onCategoryChange={handleCategoryChange}
             />
           )}
         </div>
 
-        {/* PANEL DERECHO */}
         <div
           style={{
-            width: "68%",
+            flex: 1.2,
+            minWidth: 0,
             padding: "16px",
             overflowY: "auto",
           }}
         >
-          {/* BOTÓN NUEVA NOTA */}
-          <button
-            onClick={() => setSelectedNote(null)}
-            style={{
-              marginBottom: "12px",
-              background: "#2ecc71",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              padding: "6px 12px",
-              cursor: "pointer",
-            }}
-          >
-            ➕ Nueva nota
-          </button>
+          {selectedNote && (
+            <button
+              onClick={() => setSelectedNote(null)}
+              style={{
+                marginBottom: "12px",
+                background: "#2ecc71",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                padding: "6px 12px",
+                cursor: "pointer",
+              }}
+            >
+              ➕ Nueva nota
+            </button>
+          )}
 
           {loading ? (
             <p>Cargando...</p>

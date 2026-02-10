@@ -22,8 +22,9 @@ namespace Notes.Infrastructure
         public async Task<List<Note>> GetActiveAsync()
         {
             return await _context.Notes
-                .Include(n=>n.Category)
+                .Include(n => n.Category)
                 .Where(n => !n.IsArchived)
+                .OrderByDescending(n => n.ModifiedAt)
                 .ToListAsync();
         }
 
@@ -32,6 +33,7 @@ namespace Notes.Infrastructure
             return await _context.Notes
                 .Include(n => n.Category)
                 .Where(n => n.IsArchived)
+                .OrderByDescending(n => n.ModifiedAt)
                 .ToListAsync();
         }
 

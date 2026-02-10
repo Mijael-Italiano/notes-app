@@ -10,6 +10,7 @@ namespace Notes.Api.Dtos.Note
         public string? Content { get; set; }
         public bool IsArchived { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
         public CategoryResponse? Category { get; set; }
     }
 }

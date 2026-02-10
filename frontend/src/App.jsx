@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import NotesList from "./components/NotesList";
 import NoteEditor from "./components/NoteEditor";
 import ArchivedNotesList from "./components/ArchivedNotesList";
+import CategoriesManager from "./components/CategoriesManager";
 
 import {
   getActiveNotes,
@@ -84,7 +85,21 @@ function App() {
   }
 
   /* =========================
-     CRUD
+     CATEGORÍAS
+  ========================= */
+  async function reloadCategories() {
+    try {
+      const categoriesData = await getCategories();
+      setCategories(categoriesData);
+      setSelectedCategoryId(null);
+      await loadNotes();
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  /* =========================
+     CRUD NOTAS
   ========================= */
   async function handleCreate(noteData) {
     try {
@@ -93,7 +108,6 @@ function App() {
         noteData.content,
         noteData.categoryId
       );
-
       await loadNotes();
       setSelectedNote(null);
     } catch (error) {
@@ -171,7 +185,6 @@ function App() {
   ========================= */
   return (
     <div style={{ height: "100vh", fontFamily: "Arial, sans-serif" }}>
-      {/* BOTÓN ARCHIVADAS */}
       <button
         onClick={() => {
           const next = !showArchived;
@@ -183,7 +196,6 @@ function App() {
         {showArchived ? "Ver activas" : "Ver archivadas"}
       </button>
 
-      {/* CONTENEDOR PRINCIPAL */}
       <div
         style={{
           display: "flex",
@@ -193,9 +205,10 @@ function App() {
         {/* PANEL IZQUIERDO */}
         <div
           style={{
-            width: "40%",
-            borderRight: "1px solid #ddd",
+            width: showArchived ? "100%" : "40%",
+            borderRight: showArchived ? "none" : "1px solid #ddd",
             overflowY: "auto",
+            padding: showArchived ? "16px" : "0",
           }}
         >
           {showArchived ? (
@@ -204,56 +217,64 @@ function App() {
               onUnarchive={handleUnarchive}
             />
           ) : (
-            <NotesList
-              notes={filteredNotes}
-              categories={categories}
-              selectedCategoryId={selectedCategoryId}
-              onCategoryFilterChange={setSelectedCategoryId}
-              selectedNoteId={selectedNote?.id}
-              onSelect={setSelectedNote}
-              onDelete={handleDelete}
-              onArchive={handleArchive}
-            />
+            <>
+              <CategoriesManager
+                categories={categories}
+                onCategoriesChanged={reloadCategories}
+              />
+
+              <NotesList
+                notes={filteredNotes}
+                categories={categories}
+                selectedCategoryId={selectedCategoryId}
+                onCategoryFilterChange={setSelectedCategoryId}
+                selectedNoteId={selectedNote?.id}
+                onSelect={setSelectedNote}
+                onDelete={handleDelete}
+                onArchive={handleArchive}
+              />
+            </>
           )}
         </div>
 
-        {/* PANEL DERECHO */}
-        <div
-          style={{
-            width: "60%",
-            padding: "16px",
-            overflowY: "auto",
-          }}
-        >
-          {/* BOTÓN NUEVA NOTA (SOLO SI ESTOY EDITANDO) */}
-          {selectedNote && (
-            <button
-              onClick={() => setSelectedNote(null)}
-              style={{
-                marginBottom: "12px",
-                background: "#2ecc71",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                padding: "8px 12px",
-                cursor: "pointer",
-              }}
-            >
-              ➕ Nueva nota
-            </button>
-          )}
+        {/* PANEL DERECHO (SOLO ACTIVAS) */}
+        {!showArchived && (
+          <div
+            style={{
+              width: "60%",
+              padding: "16px",
+              overflowY: "auto",
+            }}
+          >
+            {selectedNote && (
+              <button
+                onClick={() => setSelectedNote(null)}
+                style={{
+                  marginBottom: "12px",
+                  background: "#2ecc71",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  padding: "8px 12px",
+                  cursor: "pointer",
+                }}
+              >
+                ➕ Nueva nota
+              </button>
+            )}
 
-          {loading ? (
-            <p>Cargando...</p>
-          ) : (
-            <NoteEditor
-              note={selectedNote}
-              categories={categories}
-              onSave={handleSave}
-              onCreate={handleCreate}
-            />
-          )}
-        </div>
+            {loading ? (
+              <p>Cargando...</p>
+            ) : (
+              <NoteEditor
+                note={selectedNote}
+                categories={categories}
+                onSave={handleSave}
+                onCreate={handleCreate}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

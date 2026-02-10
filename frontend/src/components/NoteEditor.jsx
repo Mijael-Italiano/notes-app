@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 
+/* =========================
+   HELPERS
+========================= */
+function formatDate(dateString) {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleString();
+}
+
 function NoteEditor({ note, categories = [], onSave, onCreate }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -79,9 +87,7 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
           value={categoryId ?? ""}
           onChange={(e) =>
             setCategoryId(
-              e.target.value === ""
-                ? null
-                : Number(e.target.value)
+              e.target.value === "" ? null : Number(e.target.value)
             )
           }
           style={{ width: "100%", marginBottom: "12px" }}
@@ -108,6 +114,23 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
     <div style={{ padding: "10px" }}>
       <h3>Editar nota</h3>
 
+      {/* FECHAS */}
+      <div
+        style={{
+          fontSize: "12px",
+          color: "#666",
+          marginBottom: "10px",
+        }}
+      >
+        <div>Creada: {formatDate(note.createdAt)}</div>
+        <div>
+          Última modificación:{" "}
+          {note.modifiedAt
+            ? formatDate(note.modifiedAt)
+            : "—"}
+        </div>
+      </div>
+
       <input
         type="text"
         value={title}
@@ -122,14 +145,12 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
         style={{ width: "100%", marginBottom: "8px" }}
       />
 
-      {/* COMBOBOX DE CATEGORÍA (ACÁ ESTÁ LO QUE FALTABA) */}
+      {/* COMBOBOX DE CATEGORÍA */}
       <select
         value={categoryId ?? ""}
         onChange={(e) =>
           setCategoryId(
-            e.target.value === ""
-              ? null
-              : Number(e.target.value)
+            e.target.value === "" ? null : Number(e.target.value)
           )
         }
         style={{ width: "100%", marginBottom: "12px" }}

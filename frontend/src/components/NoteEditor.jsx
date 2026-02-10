@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 
-function NoteEditor({ note, onSave, onCreate }) {
+function NoteEditor({ note, categories = [], onSave, onCreate }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [categoryId, setCategoryId] = useState(null);
 
   useEffect(() => {
     if (note) {
       setTitle(note.title);
       setContent(note.content ?? "");
+      setCategoryId(note.categoryId ?? null);
     } else {
       setTitle("");
       setContent("");
+      setCategoryId(null);
     }
   }, [note]);
 
@@ -18,23 +21,20 @@ function NoteEditor({ note, onSave, onCreate }) {
     if (!note) return;
 
     const hasChanges =
-      title !== note.title || content !== (note.content ?? "");
+      title !== note.title ||
+      content !== (note.content ?? "") ||
+      categoryId !== note.categoryId;
 
     if (!hasChanges) {
       alert("No hay cambios para guardar");
       return;
     }
 
-    const confirmSave = window.confirm(
-      "¿Desea guardar los cambios?"
-    );
-
-    if (!confirmSave) return;
-
     onSave({
       ...note,
       title,
       content,
+      categoryId,
     });
   }
 
@@ -47,9 +47,13 @@ function NoteEditor({ note, onSave, onCreate }) {
     onCreate({
       title,
       content,
+      categoryId,
     });
   }
 
+  /* =========================
+     CREAR NOTA
+  ========================= */
   if (!note) {
     return (
       <div style={{ padding: "10px" }}>
@@ -71,11 +75,35 @@ function NoteEditor({ note, onSave, onCreate }) {
           style={{ width: "100%", marginBottom: "8px" }}
         />
 
-        <button onClick={handleCreate}>Crear nota</button>
+        <select
+          value={categoryId ?? ""}
+          onChange={(e) =>
+            setCategoryId(
+              e.target.value === ""
+                ? null
+                : Number(e.target.value)
+            )
+          }
+          style={{ width: "100%", marginBottom: "12px" }}
+        >
+          <option value="">Sin categoría</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+
+        <button onClick={handleCreate}>
+          Crear nota
+        </button>
       </div>
     );
   }
 
+  /* =========================
+     EDITAR NOTA
+  ========================= */
   return (
     <div style={{ padding: "10px" }}>
       <h3>Editar nota</h3>
@@ -94,7 +122,29 @@ function NoteEditor({ note, onSave, onCreate }) {
         style={{ width: "100%", marginBottom: "8px" }}
       />
 
-      <button onClick={handleSave}>Guardar cambios</button>
+      {/* COMBOBOX DE CATEGORÍA (ACÁ ESTÁ LO QUE FALTABA) */}
+      <select
+        value={categoryId ?? ""}
+        onChange={(e) =>
+          setCategoryId(
+            e.target.value === ""
+              ? null
+              : Number(e.target.value)
+          )
+        }
+        style={{ width: "100%", marginBottom: "12px" }}
+      >
+        <option value="">Sin categoría</option>
+        {categories.map((cat) => (
+          <option key={cat.id} value={cat.id}>
+            {cat.name}
+          </option>
+        ))}
+      </select>
+
+      <button onClick={handleSave}>
+        Guardar cambios
+      </button>
     </div>
   );
 }

@@ -9,17 +9,17 @@ import {
   createNote,
   updateNoteTitle,
   updateNoteContent,
+  updateNoteCategory,
   deleteNote,
   archiveNote,
   unarchiveNote,
-  updateNoteCategory,
 } from "./services/notesApi";
 
 import { getCategories } from "./services/categoriesApi";
 
 /* =========================
    NORMALIZACIÓN FRONT
-   ========================= */
+========================= */
 function normalizeNotes(notes) {
   return notes.map((n) => ({
     ...n,
@@ -31,7 +31,6 @@ function App() {
   /* =========================
      ESTADOS
   ========================= */
-
   const [notes, setNotes] = useState([]);
   const [archivedNotes, setArchivedNotes] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -45,7 +44,6 @@ function App() {
   /* =========================
      CARGA INICIAL
   ========================= */
-
   useEffect(() => {
     loadInitialData();
   }, []);
@@ -88,10 +86,14 @@ function App() {
   /* =========================
      CRUD
   ========================= */
-
   async function handleCreate(noteData) {
     try {
-      await createNote(noteData.title, noteData.content);
+      await createNote(
+        noteData.title,
+        noteData.content,
+        noteData.categoryId
+      );
+
       await loadNotes();
       setSelectedNote(null);
     } catch (error) {
@@ -109,6 +111,13 @@ function App() {
         await updateNoteContent(updatedNote.id, updatedNote.content);
       }
 
+      if (updatedNote.categoryId !== selectedNote.categoryId) {
+        await updateNoteCategory(
+          updatedNote.id,
+          updatedNote.categoryId
+        );
+      }
+
       await loadNotes();
       setSelectedNote(null);
     } catch (error) {
@@ -122,10 +131,7 @@ function App() {
     try {
       await deleteNote(note.id);
       await loadNotes();
-
-      if (selectedNote?.id === note.id) {
-        setSelectedNote(null);
-      }
+      setSelectedNote(null);
     } catch (error) {
       alert(error.message);
     }
@@ -153,30 +159,9 @@ function App() {
     }
   }
 
-  async function handleCategoryChange(noteId, categoryId) {
-    try {
-      await updateNoteCategory(noteId, categoryId);
-
-      setNotes((prev) =>
-        prev.map((n) =>
-          n.id === noteId ? { ...n, categoryId } : n
-        )
-      );
-
-      setSelectedNote((prev) =>
-        prev && prev.id === noteId
-          ? { ...prev, categoryId }
-          : prev
-      );
-    } catch (error) {
-      alert(error.message);
-    }
-  }
-
   /* =========================
      FILTRO POR CATEGORÍA
   ========================= */
-
   const filteredNotes = selectedCategoryId
     ? notes.filter((n) => n.categoryId === selectedCategoryId)
     : notes;
@@ -184,9 +169,9 @@ function App() {
   /* =========================
      RENDER
   ========================= */
-
   return (
     <div style={{ height: "100vh", fontFamily: "Arial, sans-serif" }}>
+      {/* BOTÓN ARCHIVADAS */}
       <button
         onClick={() => {
           const next = !showArchived;
@@ -198,11 +183,17 @@ function App() {
         {showArchived ? "Ver activas" : "Ver archivadas"}
       </button>
 
-      <div style={{ display: "flex", height: "calc(100% - 50px)" }}>
+      {/* CONTENEDOR PRINCIPAL */}
+      <div
+        style={{
+          display: "flex",
+          height: "calc(100% - 50px)",
+        }}
+      >
+        {/* PANEL IZQUIERDO */}
         <div
           style={{
-            flex: 1,
-            minWidth: 0,
+            width: "40%",
             borderRight: "1px solid #ddd",
             overflowY: "auto",
           }}
@@ -222,19 +213,19 @@ function App() {
               onSelect={setSelectedNote}
               onDelete={handleDelete}
               onArchive={handleArchive}
-              onCategoryChange={handleCategoryChange}
             />
           )}
         </div>
 
+        {/* PANEL DERECHO */}
         <div
           style={{
-            flex: 1.2,
-            minWidth: 0,
+            width: "60%",
             padding: "16px",
             overflowY: "auto",
           }}
         >
+          {/* BOTÓN NUEVA NOTA (SOLO SI ESTOY EDITANDO) */}
           {selectedNote && (
             <button
               onClick={() => setSelectedNote(null)}
@@ -244,7 +235,7 @@ function App() {
                 color: "white",
                 border: "none",
                 borderRadius: "4px",
-                padding: "6px 12px",
+                padding: "8px 12px",
                 cursor: "pointer",
               }}
             >
@@ -257,6 +248,7 @@ function App() {
           ) : (
             <NoteEditor
               note={selectedNote}
+              categories={categories}
               onSave={handleSave}
               onCreate={handleCreate}
             />

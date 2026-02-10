@@ -18,13 +18,17 @@ export async function getActiveNotes() {
    CREAR NOTA
 ======================= */
 
-export async function createNote(title, content) {
+export async function createNote(title, content, categoryId) {
   const response = await fetch(API_BASE_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ title, content }),
+    body: JSON.stringify({
+      title,
+      content,
+      categoryId, // 👈 CLAVE
+    }),
   });
 
   if (!response.ok) {
@@ -101,10 +105,9 @@ export async function deleteNote(id) {
 ======================= */
 
 export async function archiveNote(id) {
-  const response = await fetch(
-    `${API_BASE_URL}/${id}/archive`,
-    { method: "POST" }
-  );
+  const response = await fetch(`${API_BASE_URL}/${id}/archive`, {
+    method: "POST",
+  });
 
   if (!response.ok) {
     throw new Error("No se pudo archivar la nota");
@@ -112,10 +115,9 @@ export async function archiveNote(id) {
 }
 
 export async function unarchiveNote(id) {
-  const response = await fetch(
-    `${API_BASE_URL}/${id}/unarchive`,
-    { method: "POST" }
-  );
+  const response = await fetch(`${API_BASE_URL}/${id}/unarchive`, {
+    method: "POST",
+  });
 
   if (!response.ok) {
     throw new Error("No se pudo desarchivar la nota");

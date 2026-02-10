@@ -49,6 +49,7 @@ namespace Notes.Api.Controllers
                 Content = n.Content,
                 IsArchived = n.IsArchived,
                 CreatedAt = n.CreatedAt,
+                ModifiedAt = n.ModifiedAt,
                 Category = n.Category == null
                     ? null
                     : new CategoryResponse
@@ -76,6 +77,7 @@ namespace Notes.Api.Controllers
                 Content = n.Content,
                 IsArchived = n.IsArchived,
                 CreatedAt = n.CreatedAt,
+                ModifiedAt = n.ModifiedAt,  
                 Category = n.Category == null
                     ? null
                     : new CategoryResponse

@@ -33,7 +33,9 @@ namespace Notes.Domain
             Title = title;
             Content = content;
             IsArchived = false;
-            CreatedAt = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
+            CreatedAt = now;
+            ModifiedAt = now;
         }
 
         public void UpdateTitle(string title)

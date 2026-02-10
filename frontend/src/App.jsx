@@ -140,7 +140,7 @@ function App() {
   }
 
   async function handleDelete(note) {
-    if (!window.confirm("¿Eliminar la nota?")) return;
+    if (!window.confirm("Delete this note?")) return;
 
     try {
       await deleteNote(note.id);
@@ -152,7 +152,7 @@ function App() {
   }
 
   async function handleArchive(note) {
-    if (!window.confirm("¿Archivar la nota?")) return;
+    if (!window.confirm("Archive this note?")) return;
 
     try {
       await archiveNote(note.id);
@@ -193,7 +193,7 @@ function App() {
         }}
         style={{ margin: "10px" }}
       >
-        {showArchived ? "Ver activas" : "Ver archivadas"}
+        {showArchived ? "View active" : "View archived"}
       </button>
 
       <div
@@ -259,12 +259,12 @@ function App() {
                   cursor: "pointer",
                 }}
               >
-                ➕ Nueva nota
+                ➕ New note
               </button>
             )}
 
             {loading ? (
-              <p>Cargando...</p>
+              <p>Loading...</p>
             ) : (
               <NoteEditor
                 note={selectedNote}

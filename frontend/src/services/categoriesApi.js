@@ -1,20 +1,20 @@
 const API_BASE_URL = "https://localhost:7043/api/Categories";
 
 /* =======================
-   OBTENER CATEGORÍAS
+   GET CATEGORIES
 ======================= */
 export async function getCategories() {
   const response = await fetch(API_BASE_URL);
 
   if (!response.ok) {
-    throw new Error("Error al obtener categorías");
+    throw new Error("Failed to fetch categories");
   }
 
   return await response.json();
 }
 
 /* =======================
-   CREAR CATEGORÍA
+   CREATE CATEGORY
 ======================= */
 export async function createCategory(data) {
   const response = await fetch(API_BASE_URL, {
@@ -26,12 +26,12 @@ export async function createCategory(data) {
   });
 
   if (!response.ok) {
-    throw new Error("Error al crear la categoría");
+    throw new Error("Failed to create category");
   }
 }
 
 /* =======================
-   RENOMBRAR CATEGORÍA
+   RENAME CATEGORY
 ======================= */
 export async function renameCategory(id, data) {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
@@ -43,12 +43,12 @@ export async function renameCategory(id, data) {
   });
 
   if (!response.ok) {
-    throw new Error("Error al renombrar la categoría");
+    throw new Error("Failed to rename category");
   }
 }
 
 /* =======================
-   ELIMINAR CATEGORÍA
+   DELETE CATEGORY
 ======================= */
 export async function deleteCategory(id) {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
@@ -56,6 +56,6 @@ export async function deleteCategory(id) {
   });
 
   if (!response.ok) {
-    throw new Error("Error al eliminar la categoría");
+    throw new Error("Failed to delete category");
   }
 }

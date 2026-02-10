@@ -34,7 +34,7 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
       categoryId !== note.categoryId;
 
     if (!hasChanges) {
-      alert("No hay cambios para guardar");
+      alert("No changes to save");
       return;
     }
 
@@ -48,7 +48,7 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
 
   function handleCreate() {
     if (!title.trim()) {
-      alert("El título es obligatorio");
+      alert("Title is required");
       return;
     }
 
@@ -60,23 +60,23 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
   }
 
   /* =========================
-     CREAR NOTA
+     CREATE NOTE
   ========================= */
   if (!note) {
     return (
       <div style={{ padding: "10px" }}>
-        <h3>Nueva nota</h3>
+        <h3>New note</h3>
 
         <input
           type="text"
-          placeholder="Título"
+          placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           style={{ width: "100%", marginBottom: "8px" }}
         />
 
         <textarea
-          placeholder="Contenido"
+          placeholder="Content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={6}
@@ -92,7 +92,7 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
           }
           style={{ width: "100%", marginBottom: "12px" }}
         >
-          <option value="">Sin categoría</option>
+          <option value="">No category</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
@@ -101,20 +101,20 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
         </select>
 
         <button onClick={handleCreate}>
-          Crear nota
+          Create note
         </button>
       </div>
     );
   }
 
   /* =========================
-     EDITAR NOTA
+     EDIT NOTE
   ========================= */
   return (
     <div style={{ padding: "10px" }}>
-      <h3>Editar nota</h3>
+      <h3>Edit note</h3>
 
-      {/* FECHAS */}
+      {/* DATES */}
       <div
         style={{
           fontSize: "12px",
@@ -122,9 +122,9 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
           marginBottom: "10px",
         }}
       >
-        <div>Creada: {formatDate(note.createdAt)}</div>
+        <div>Created: {formatDate(note.createdAt)}</div>
         <div>
-          Última modificación:{" "}
+          Last modified:{" "}
           {note.modifiedAt
             ? formatDate(note.modifiedAt)
             : "—"}
@@ -145,7 +145,7 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
         style={{ width: "100%", marginBottom: "8px" }}
       />
 
-      {/* COMBOBOX DE CATEGORÍA */}
+      {/* CATEGORY SELECT */}
       <select
         value={categoryId ?? ""}
         onChange={(e) =>
@@ -155,7 +155,7 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
         }
         style={{ width: "100%", marginBottom: "12px" }}
       >
-        <option value="">Sin categoría</option>
+        <option value="">No category</option>
         {categories.map((cat) => (
           <option key={cat.id} value={cat.id}>
             {cat.name}
@@ -164,7 +164,7 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
       </select>
 
       <button onClick={handleSave}>
-        Guardar cambios
+        Save changes
       </button>
     </div>
   );

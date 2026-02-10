@@ -1,21 +1,21 @@
 const API_BASE_URL = "https://localhost:7043/api/Notes";
 
 /* =======================
-   NOTAS ACTIVAS
+   ACTIVE NOTES
 ======================= */
 
 export async function getActiveNotes() {
   const response = await fetch(`${API_BASE_URL}/active`);
 
   if (!response.ok) {
-    throw new Error("Error al obtener notas activas");
+    throw new Error("Failed to fetch active notes");
   }
 
   return await response.json();
 }
 
 /* =======================
-   CREAR NOTA
+   CREATE NOTE
 ======================= */
 
 export async function createNote(title, content, categoryId) {
@@ -27,17 +27,17 @@ export async function createNote(title, content, categoryId) {
     body: JSON.stringify({
       title,
       content,
-      categoryId, // 👈 CLAVE
+      categoryId, // 👈 KEY
     }),
   });
 
   if (!response.ok) {
-    throw new Error("Error al crear la nota");
+    throw new Error("Failed to create note");
   }
 }
 
 /* =======================
-   ACTUALIZACIONES
+   UPDATES
 ======================= */
 
 export async function updateNoteTitle(id, title) {
@@ -50,7 +50,7 @@ export async function updateNoteTitle(id, title) {
   });
 
   if (!response.ok) {
-    throw new Error("Error al actualizar el título");
+    throw new Error("Failed to update note title");
   }
 }
 
@@ -64,12 +64,12 @@ export async function updateNoteContent(id, content) {
   });
 
   if (!response.ok) {
-    throw new Error("Error al actualizar el contenido");
+    throw new Error("Failed to update note content");
   }
 }
 
 /* =======================
-   ACTUALIZAR CATEGORÍA
+   UPDATE CATEGORY
 ======================= */
 
 export async function updateNoteCategory(id, categoryId) {
@@ -82,12 +82,12 @@ export async function updateNoteCategory(id, categoryId) {
   });
 
   if (!response.ok) {
-    throw new Error("Error al actualizar la categoría");
+    throw new Error("Failed to update note category");
   }
 }
 
 /* =======================
-   ELIMINAR
+   DELETE
 ======================= */
 
 export async function deleteNote(id) {
@@ -96,12 +96,12 @@ export async function deleteNote(id) {
   });
 
   if (!response.ok) {
-    throw new Error("Error al eliminar la nota");
+    throw new Error("Failed to delete note");
   }
 }
 
 /* =======================
-   ARCHIVAR / DESARCHIVAR
+   ARCHIVE / UNARCHIVE
 ======================= */
 
 export async function archiveNote(id) {
@@ -110,7 +110,7 @@ export async function archiveNote(id) {
   });
 
   if (!response.ok) {
-    throw new Error("No se pudo archivar la nota");
+    throw new Error("Failed to archive note");
   }
 }
 
@@ -120,19 +120,19 @@ export async function unarchiveNote(id) {
   });
 
   if (!response.ok) {
-    throw new Error("No se pudo desarchivar la nota");
+    throw new Error("Failed to unarchive note");
   }
 }
 
 /* =======================
-   NOTAS ARCHIVADAS
+   ARCHIVED NOTES
 ======================= */
 
 export async function getArchivedNotes() {
   const response = await fetch(`${API_BASE_URL}/archived`);
 
   if (!response.ok) {
-    throw new Error("No se pudieron cargar las notas archivadas");
+    throw new Error("Failed to fetch archived notes");
   }
 
   return await response.json();

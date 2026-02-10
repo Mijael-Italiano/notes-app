@@ -10,7 +10,7 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
 
   async function handleCreate() {
     if (!newName.trim()) {
-      alert("El nombre es obligatorio");
+      alert("Name is required");
       return;
     }
 
@@ -25,7 +25,7 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
 
   async function handleRename(category) {
     const name = prompt(
-      "Nuevo nombre de la categoría",
+      "New category name",
       category.name
     );
 
@@ -42,7 +42,7 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
   async function handleDelete(category) {
     if (
       !window.confirm(
-        `¿Eliminar la categoría "${category.name}"?\nLas notas quedarán sin categoría.`
+        `Delete category "${category.name}"?\nNotes will be left without a category.`
       )
     )
       return;
@@ -64,10 +64,10 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
       }}
     >
       <h4 style={{ marginBottom: "8px" }}>
-        Administrar categorías
+        Manage categories
       </h4>
 
-      {/* CREAR */}
+      {/* CREATE */}
       <div
         style={{
           display: "flex",
@@ -77,7 +77,7 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
       >
         <input
           type="text"
-          placeholder="Nueva categoría"
+          placeholder="New category"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           style={{ flex: 1 }}
@@ -85,10 +85,10 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
         <button onClick={handleCreate}>➕</button>
       </div>
 
-      {/* LISTA */}
+      {/* LIST */}
       {categories.length === 0 && (
         <p style={{ fontSize: "12px", color: "#666" }}>
-          No hay categorías
+          No categories
         </p>
       )}
 

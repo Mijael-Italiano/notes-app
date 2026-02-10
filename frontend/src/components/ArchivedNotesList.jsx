@@ -1,10 +1,12 @@
 function ArchivedNotesList({ notes, onUnarchive }) {
   return (
     <div style={{ padding: "10px" }}>
-      <h3>Archivadas</h3>
+      <h3>Archived</h3>
 
       {notes.length === 0 && (
-        <p style={{ color: "#666" }}>No hay notas archivadas</p>
+        <p style={{ color: "#666" }}>
+          No archived notes
+        </p>
       )}
 
       <ul style={{ listStyle: "none", padding: 0 }}>
@@ -32,6 +34,7 @@ function ArchivedNotesList({ notes, onUnarchive }) {
                 borderRadius: "4px",
                 cursor: "pointer",
               }}
+              title="Unarchive"
             >
               ↩️
             </button>

@@ -10,9 +10,9 @@ function NotesList({
 }) {
   return (
     <div style={{ padding: "12px" }}>
-      <h3 style={{ marginBottom: "8px" }}>Notas</h3>
+      <h3 style={{ marginBottom: "8px" }}>Notes</h3>
 
-      {/* FILTRO POR CATEGORÍA */}
+      {/* CATEGORY FILTER */}
       <div style={{ marginBottom: "12px" }}>
         <select
           value={selectedCategoryId ?? ""}
@@ -22,7 +22,7 @@ function NotesList({
             onCategoryFilterChange(value);
           }}
         >
-          <option value="">Todas las categorías</option>
+          <option value="">All categories</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
@@ -31,13 +31,13 @@ function NotesList({
         </select>
       </div>
 
-      {notes.length === 0 && <p>No hay notas</p>}
+      {notes.length === 0 && <p>No notes</p>}
 
       <ul style={{ listStyle: "none", padding: 0 }}>
         {notes.map((note) => {
           const categoryName =
             categories.find((c) => c.id === note.categoryId)?.name ??
-            "Sin categoría";
+            "No category";
 
           const isSelected = note.id === selectedNoteId;
 
@@ -57,7 +57,7 @@ function NotesList({
                 cursor: "pointer",
               }}
             >
-              {/* IZQUIERDA */}
+              {/* LEFT */}
               <div style={{ flex: 1 }}>
                 <div
                   style={{
@@ -68,7 +68,7 @@ function NotesList({
                   {note.title}
                 </div>
 
-                {/* BADGE DE CATEGORÍA (SOLO LECTURA) */}
+                {/* CATEGORY BADGE (READ ONLY) */}
                 <span
                   style={{
                     display: "inline-block",
@@ -84,7 +84,7 @@ function NotesList({
                 </span>
               </div>
 
-              {/* DERECHA */}
+              {/* RIGHT */}
               <div
                 style={{
                   display: "flex",
@@ -97,6 +97,7 @@ function NotesList({
                     e.stopPropagation();
                     onArchive(note);
                   }}
+                  title="Archive"
                 >
                   📦
                 </button>
@@ -106,6 +107,7 @@ function NotesList({
                     e.stopPropagation();
                     onDelete(note);
                   }}
+                  title="Delete"
                 >
                   ❌
                 </button>

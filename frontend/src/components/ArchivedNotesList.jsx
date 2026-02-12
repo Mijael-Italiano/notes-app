@@ -19,15 +19,29 @@ function ArchivedNotesList({ notes, onUnarchive }) {
               border: "1px solid #ccc",
               borderRadius: "4px",
               display: "flex",
-              justifyContent: "space-between",
               alignItems: "center",
+              gap: "10px",
             }}
           >
-            <span>{note.title}</span>
+            {/* TITLE */}
+            <div
+              style={{
+                flex: 1,
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {note.title}
+            </div>
 
+            {/* BUTTON */}
             <button
               onClick={() => onUnarchive(note)}
               style={{
+                flexShrink: 0,
+                width: "40px",
+                height: "32px",
                 background: "#2ecc71",
                 color: "white",
                 border: "none",

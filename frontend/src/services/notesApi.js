@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://localhost:7043/api/Notes";
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/Notes`;
 
 /* =======================
    ACTIVE NOTES

@@ -9,6 +9,7 @@ using Notes.Domain;
 
 namespace Notes.Infrastructure
 {
+    // Repository responsible for Category persistence operations.
     public class CategoryRepository
     {
         private readonly NotesDbContext _context;
@@ -18,26 +19,25 @@ namespace Notes.Infrastructure
             _context = context;
         }
 
-        // Listar todas las categorías
         public async Task<List<Category>> GetAllAsync()
         {
             return await _context.Categories.ToListAsync();
         }
 
-        // Buscar categoría por Id
         public async Task<Category?> GetByIdAsync(int id)
         {
             return await _context.Categories.FindAsync(id);
         }
 
-        // Chequeo de unicidad para CREAR
+        // Checks name uniqueness when creating a category.
         public async Task<bool> ExistsByNameAsync(string name)
         {
             return await _context.Categories
                 .AnyAsync(c => c.Name == name);
         }
 
-        // Chequeo de unicidad para MODIFICAR (excluye la propia categoría)
+        // Checks name uniqueness when updating a category,
+        // excluding the current category from validation.
         public async Task<bool> ExistsByNameAsync(string name, int excludeCategoryId)
         {
             return await _context.Categories
@@ -47,21 +47,18 @@ namespace Notes.Infrastructure
                 );
         }
 
-        // Crear categoría
         public async Task AddAsync(Category category)
         {
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
         }
 
-        // Modificar categoría
         public async Task UpdateAsync(Category category)
         {
             _context.Categories.Update(category);
             await _context.SaveChangesAsync();
         }
 
-        // Borrar categoría
         public async Task DeleteAsync(Category category)
         {
             _context.Categories.Remove(category);

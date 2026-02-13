@@ -9,6 +9,7 @@ using Notes.Infrastructure;
 
 namespace Notes.Application
 {
+    // Application service responsible for Note use cases and business rules.
     public class NoteService
     {
         private readonly NoteRepository _noteRepository;
@@ -22,9 +23,7 @@ namespace Notes.Application
             _categoryService = categoryService;
         }
 
-        // =========================
-        // CREATE
-        // =========================
+        // Creates a new note enforcing business validations.
         public async Task CreateAsync(string title, string? content, int? categoryId)
         {
             if (string.IsNullOrWhiteSpace(title))
@@ -44,9 +43,7 @@ namespace Notes.Application
             await _noteRepository.AddAsync(note);
         }
 
-        // =========================
-        // UPDATE CATEGORY
-        // =========================
+        // Updates the category assigned to a note.
         public async Task UpdateCategoryAsync(int noteId, int? categoryId)
         {
             var note = await _noteRepository.GetByIdAsync(noteId)
@@ -65,9 +62,6 @@ namespace Notes.Application
             await _noteRepository.UpdateAsync(note);
         }
 
-        // =========================
-        // RESTO (sin cambios)
-        // =========================
         public async Task UpdateContentAsync(int noteId, string? newContent)
         {
             var note = await _noteRepository.GetByIdAsync(noteId)

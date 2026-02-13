@@ -24,9 +24,8 @@ namespace Notes.Domain
 
         public DateTime? ModifiedAt { get; set; }
 
-        protected Note()
-        {
-        }
+        // Required by EF Core.
+        protected Note() { }
 
         public Note(string title, string? content)
         {
@@ -75,8 +74,5 @@ namespace Notes.Domain
             CategoryId = null;
             ModifiedAt = DateTime.UtcNow;
         }
-
-
     }
-
 }

@@ -12,22 +12,19 @@ namespace Notes.Domain
 
         public string Name { get; private set; }
 
+        // Required by EF Core.
         protected Category() { }
 
         public Category(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidOperationException("El nombre de la categoría es obligatorio.");
-
             Name = name;
         }
 
         public void Rename(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidOperationException("El nombre de la categoría es obligatorio.");
-
             Name = name;
         }
+
+
     }
 }

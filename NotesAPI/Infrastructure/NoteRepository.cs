@@ -9,6 +9,7 @@ using Notes.Domain;
 
 namespace Notes.Infrastructure
 {
+    // Repository responsible for Note persistence operations.
     public class NoteRepository
     {
         private readonly NotesDbContext _context;
@@ -18,7 +19,8 @@ namespace Notes.Infrastructure
             _context = context;
         }
 
-
+        // Returns non-archived notes including their Category,
+        // ordered by last modification date (descending).
         public async Task<List<Note>> GetActiveAsync()
         {
             return await _context.Notes
@@ -28,6 +30,8 @@ namespace Notes.Infrastructure
                 .ToListAsync();
         }
 
+        // Returns archived notes including their Category,
+        // ordered by last modification date (descending).
         public async Task<List<Note>> GetArchivedAsync()
         {
             return await _context.Notes
@@ -60,6 +64,8 @@ namespace Notes.Infrastructure
             await _context.SaveChangesAsync();
         }
 
+        // Checks title uniqueness.
+        // Optionally excludes a specific note (used during updates).
         public async Task<bool> TitleExistsAsync(string title, int? excludeNoteId = null)
         {
             return await _context.Notes

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Notes.Application
 {
+    // Application service responsible for Category use cases and business rules.
     public class CategoryService
     {
         private readonly CategoryRepository _categoryRepository;
@@ -18,26 +19,18 @@ namespace Notes.Application
             _categoryRepository = categoryRepository;
         }
 
-        // =========================
-        // GET BY ID  ✅ (NUEVO)
-        // =========================
         public async Task<Category> GetByIdAsync(int categoryId)
         {
             return await _categoryRepository.GetByIdAsync(categoryId)
                 ?? throw new InvalidOperationException("La categoría no existe.");
         }
 
-        // =========================
-        // GET ALL
-        // =========================
         public async Task<List<Category>> GetAllAsync()
         {
             return await _categoryRepository.GetAllAsync();
         }
 
-        // =========================
-        // CREATE
-        // =========================
+        // Creates a category enforcing name validation and uniqueness.
         public async Task CreateAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -50,9 +43,7 @@ namespace Notes.Application
             await _categoryRepository.AddAsync(category);
         }
 
-        // =========================
-        // RENAME
-        // =========================
+        // Renames a category enforcing validation and uniqueness.
         public async Task RenameAsync(int categoryId, string newName)
         {
             if (string.IsNullOrWhiteSpace(newName))
@@ -68,9 +59,6 @@ namespace Notes.Application
             await _categoryRepository.UpdateAsync(category);
         }
 
-        // =========================
-        // DELETE
-        // =========================
         public async Task DeleteAsync(int categoryId)
         {
             var category = await _categoryRepository.GetByIdAsync(categoryId)

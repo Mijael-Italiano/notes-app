@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Notes.Api.Controllers
 {
+    // API controller responsible for Category endpoints.
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
@@ -18,14 +19,12 @@ namespace Notes.Api.Controllers
             _categoryService = categoryService;
         }
 
-        // GET /api/categories
         [HttpGet]
         public async Task<ActionResult<List<Category>>> GetAll()
         {
             return Ok(await _categoryService.GetAllAsync());
         }
 
-        // POST /api/categories
         [HttpPost]
         public async Task<IActionResult> Create(CreateCategoryRequest request)
         {
@@ -33,7 +32,6 @@ namespace Notes.Api.Controllers
             return Ok();
         }
 
-        // PUT /api/categories/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Rename(int id, RenameCategoryRequest request)
         {
@@ -41,7 +39,6 @@ namespace Notes.Api.Controllers
             return Ok();
         }
 
-        // DELETE /api/categories/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

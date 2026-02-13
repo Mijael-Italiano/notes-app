@@ -14,7 +14,7 @@ namespace Notes.Infrastructure
     {
         public NotesDbContext CreateDbContext(string[] args)
         {
-            // Lee appsettings.json
+            // Loads configuration from appsettings.json
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)

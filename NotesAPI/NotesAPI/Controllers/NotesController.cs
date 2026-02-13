@@ -19,9 +19,7 @@ namespace Notes.Api.Controllers
             _noteService = noteService;
         }
 
-        // =========================
-        // CREATE
-        // =========================
+        // Creates a new note.
         [HttpPost]
         public async Task<IActionResult> Create(CreateNoteRequest request)
         {
@@ -34,9 +32,7 @@ namespace Notes.Api.Controllers
             return Ok();
         }
 
-        // =========================
-        // GET ACTIVE
-        // =========================
+        // Returns active (non-archived) notes.
         [HttpGet("active")]
         public async Task<ActionResult<IEnumerable<NoteResponse>>> GetActive()
         {
@@ -62,9 +58,7 @@ namespace Notes.Api.Controllers
             return Ok(response);
         }
 
-        // =========================
-        // GET ARCHIVED
-        // =========================
+        // Returns archived notes.
         [HttpGet("archived")]
         public async Task<ActionResult<IEnumerable<NoteResponse>>> GetArchived()
         {
@@ -77,7 +71,7 @@ namespace Notes.Api.Controllers
                 Content = n.Content,
                 IsArchived = n.IsArchived,
                 CreatedAt = n.CreatedAt,
-                ModifiedAt = n.ModifiedAt,  
+                ModifiedAt = n.ModifiedAt,
                 Category = n.Category == null
                     ? null
                     : new CategoryResponse
@@ -90,9 +84,6 @@ namespace Notes.Api.Controllers
             return Ok(response);
         }
 
-        // =========================
-        // UPDATE
-        // =========================
         [HttpPut("{id}/title")]
         public async Task<IActionResult> UpdateTitle(int id, UpdateTitleRequest request)
         {
@@ -114,9 +105,6 @@ namespace Notes.Api.Controllers
             return Ok();
         }
 
-        // =========================
-        // ARCHIVE
-        // =========================
         [HttpPost("{id}/archive")]
         public async Task<IActionResult> Archive(int id)
         {
@@ -131,9 +119,6 @@ namespace Notes.Api.Controllers
             return Ok();
         }
 
-        // =========================
-        // DELETE
-        // =========================
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

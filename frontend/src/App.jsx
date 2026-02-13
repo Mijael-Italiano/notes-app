@@ -18,9 +18,10 @@ import {
 
 import { getCategories } from "./services/categoriesApi";
 
-/* =========================
-   NORMALIZACIÓN FRONT
-========================= */
+/*
+  Normalizes backend note structure to simplify frontend state handling.
+  Extracts categoryId from nested category object.
+*/
 function normalizeNotes(notes) {
   return notes.map((n) => ({
     ...n,
@@ -29,9 +30,15 @@ function normalizeNotes(notes) {
 }
 
 function App() {
-  /* =========================
-     ESTADOS
-  ========================= */
+  /*
+    Application state:
+    - notes / archivedNotes: active and archived collections
+    - categories: available note categories
+    - selectedNote: note currently being edited
+    - selectedCategoryId: filter state
+    - loading: initial loading indicator
+    - showArchived: UI mode toggle
+  */
   const [notes, setNotes] = useState([]);
   const [archivedNotes, setArchivedNotes] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -42,9 +49,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
 
-  /* =========================
-     CARGA INICIAL
-  ========================= */
+  /*
+    Initial data load:
+    Fetches active notes and categories in parallel.
+  */
   useEffect(() => {
     loadInitialData();
   }, []);
@@ -66,6 +74,9 @@ function App() {
     }
   }
 
+  /*
+    Reloads active notes from backend.
+  */
   async function loadNotes() {
     try {
       const data = await getActiveNotes();
@@ -75,6 +86,9 @@ function App() {
     }
   }
 
+  /*
+    Loads archived notes when archived view is enabled.
+  */
   async function loadArchivedNotes() {
     try {
       const data = await getArchivedNotes();
@@ -84,9 +98,9 @@ function App() {
     }
   }
 
-  /* =========================
-     CATEGORÍAS
-  ========================= */
+  /*
+    Refreshes categories and resets active category filter.
+  */
   async function reloadCategories() {
     try {
       const categoriesData = await getCategories();
@@ -98,9 +112,9 @@ function App() {
     }
   }
 
-  /* =========================
-     CRUD NOTAS
-  ========================= */
+  /*
+    Creates a new note and refreshes active list.
+  */
   async function handleCreate(noteData) {
     try {
       await createNote(
@@ -115,6 +129,9 @@ function App() {
     }
   }
 
+  /*
+    Updates only modified fields to avoid unnecessary API calls.
+  */
   async function handleSave(updatedNote) {
     try {
       if (updatedNote.title !== selectedNote.title) {
@@ -139,6 +156,9 @@ function App() {
     }
   }
 
+  /*
+    Deletes a note after user confirmation.
+  */
   async function handleDelete(note) {
     if (!window.confirm("Delete this note?")) return;
 
@@ -151,6 +171,9 @@ function App() {
     }
   }
 
+  /*
+    Archives a note after user confirmation.
+  */
   async function handleArchive(note) {
     if (!window.confirm("Archive this note?")) return;
 
@@ -163,6 +186,9 @@ function App() {
     }
   }
 
+  /*
+    Restores an archived note and refreshes both lists.
+  */
   async function handleUnarchive(note) {
     try {
       await unarchiveNote(note.id);
@@ -173,16 +199,18 @@ function App() {
     }
   }
 
-  /* =========================
-     FILTRO POR CATEGORÍA
-  ========================= */
+  /*
+    Client-side filtering by selected category.
+  */
   const filteredNotes = selectedCategoryId
     ? notes.filter((n) => n.categoryId === selectedCategoryId)
     : notes;
 
-  /* =========================
-     RENDER
-  ========================= */
+  /*
+    Main layout:
+    - Left panel: categories + active notes OR archived notes
+    - Right panel: note editor (only in active mode)
+  */
   return (
     <div style={{ height: "100vh", fontFamily: "Arial, sans-serif" }}>
       <button
@@ -202,7 +230,7 @@ function App() {
           height: "calc(100% - 50px)",
         }}
       >
-        {/* PANEL IZQUIERDO */}
+        {/* Left panel */}
         <div
           style={{
             width: showArchived ? "100%" : "40%",
@@ -237,7 +265,7 @@ function App() {
           )}
         </div>
 
-        {/* PANEL DERECHO (SOLO ACTIVAS) */}
+        {/* Right panel (active mode only) */}
         {!showArchived && (
           <div
             style={{

@@ -1,18 +1,25 @@
 import { useEffect, useState } from "react";
 
-/* =========================
-   HELPERS
-========================= */
+/*
+  Formats ISO date strings for display.
+*/
 function formatDate(dateString) {
   if (!dateString) return "-";
   return new Date(dateString).toLocaleString();
 }
 
+/*
+  Handles both note creation and editing.
+  Behavior depends on whether `note` prop is provided.
+*/
 function NoteEditor({ note, categories = [], onSave, onCreate }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState(null);
 
+  /*
+    Synchronizes local state when selected note changes.
+  */
   useEffect(() => {
     if (note) {
       setTitle(note.title);
@@ -25,6 +32,9 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
     }
   }, [note]);
 
+  /*
+    Persists changes only if fields were modified.
+  */
   function handleSave() {
     if (!note) return;
 
@@ -46,6 +56,9 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
     });
   }
 
+  /*
+    Creates a new note after basic validation.
+  */
   function handleCreate() {
     if (!title.trim()) {
       alert("Title is required");
@@ -59,9 +72,9 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
     });
   }
 
-  /* =========================
-     CREATE NOTE
-  ========================= */
+  /*
+    Creation mode (no note selected).
+  */
   if (!note) {
     return (
       <div style={{ padding: "10px" }}>
@@ -107,14 +120,14 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
     );
   }
 
-  /* =========================
-     EDIT NOTE
-  ========================= */
+  /*
+    Edit mode (existing note selected).
+  */
   return (
     <div style={{ padding: "10px" }}>
       <h3>Edit note</h3>
 
-      {/* DATES */}
+      {/* Metadata display */}
       <div
         style={{
           fontSize: "12px",
@@ -145,7 +158,6 @@ function NoteEditor({ note, categories = [], onSave, onCreate }) {
         style={{ width: "100%", marginBottom: "8px" }}
       />
 
-      {/* CATEGORY SELECT */}
       <select
         value={categoryId ?? ""}
         onChange={(e) =>

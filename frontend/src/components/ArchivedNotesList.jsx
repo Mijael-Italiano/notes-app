@@ -1,8 +1,13 @@
+/*
+  Displays archived notes list.
+  Allows restoring a note via onUnarchive callback.
+*/
 function ArchivedNotesList({ notes, onUnarchive }) {
   return (
     <div style={{ padding: "10px" }}>
       <h3>Archived</h3>
 
+      {/* Empty state */}
       {notes.length === 0 && (
         <p style={{ color: "#666" }}>
           No archived notes
@@ -23,7 +28,7 @@ function ArchivedNotesList({ notes, onUnarchive }) {
               gap: "10px",
             }}
           >
-            {/* TITLE */}
+            {/* Note title with overflow handling */}
             <div
               style={{
                 flex: 1,
@@ -35,7 +40,7 @@ function ArchivedNotesList({ notes, onUnarchive }) {
               {note.title}
             </div>
 
-            {/* BUTTON */}
+            {/* Restore action */}
             <button
               onClick={() => onUnarchive(note)}
               style={{

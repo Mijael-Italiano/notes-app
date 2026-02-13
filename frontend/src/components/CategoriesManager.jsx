@@ -5,9 +5,16 @@ import {
   renameCategory,
 } from "../services/categoriesApi";
 
+/*
+  Manages category CRUD operations.
+  Delegates persistence to API layer and notifies parent on changes.
+*/
 function CategoriesManager({ categories, onCategoriesChanged }) {
   const [newName, setNewName] = useState("");
 
+  /*
+    Creates a new category after basic validation.
+  */
   async function handleCreate() {
     if (!newName.trim()) {
       alert("Name is required");
@@ -23,6 +30,9 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
     }
   }
 
+  /*
+    Renames selected category.
+  */
   async function handleRename(category) {
     const name = prompt(
       "New category name",
@@ -39,6 +49,9 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
     }
   }
 
+  /*
+    Deletes selected category after confirmation.
+  */
   async function handleDelete(category) {
     if (
       !window.confirm(
@@ -67,7 +80,7 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
         Manage categories
       </h4>
 
-      {/* CREATE */}
+      {/* Category creation input */}
       <div
         style={{
           display: "flex",
@@ -85,7 +98,7 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
         <button onClick={handleCreate}>➕</button>
       </div>
 
-      {/* LIST */}
+      {/* Empty state */}
       {categories.length === 0 && (
         <p style={{ fontSize: "12px", color: "#666" }}>
           No categories
@@ -104,6 +117,8 @@ function CategoriesManager({ categories, onCategoriesChanged }) {
             }}
           >
             <span>{cat.name}</span>
+
+            {/* Rename / Delete actions */}
             <div style={{ display: "flex", gap: "4px" }}>
               <button onClick={() => handleRename(cat)}>
                 ✏️

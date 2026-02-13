@@ -2,16 +2,17 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copiamos package.json primero para aprovechar cache
+# Copy package files first to leverage Docker layer caching
 COPY package.json package-lock.json ./
 
+# Install project dependencies
 RUN npm install
 
-# Copiamos el resto del código
+# Copy the rest of the application source code
 COPY . .
 
-# Exponemos el puerto de Vite
+# Expose Vite development server port
 EXPOSE 5173
 
-# Ejecutamos Vite en modo dev y lo exponemos a la red
+# Run Vite in development mode and bind to all network interfaces
 CMD ["npm", "run", "dev", "--", "--host"]

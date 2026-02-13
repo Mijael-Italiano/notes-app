@@ -1,9 +1,12 @@
+/*
+  Base URL for Notes API.
+  Uses Vite environment variable to support different environments (dev, docker, production).
+*/
 const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/Notes`;
 
-/* =======================
-   ACTIVE NOTES
-======================= */
-
+/*
+  Retrieves all active (non-archived) notes.
+*/
 export async function getActiveNotes() {
   const response = await fetch(`${API_BASE_URL}/active`);
 
@@ -14,10 +17,9 @@ export async function getActiveNotes() {
   return await response.json();
 }
 
-/* =======================
-   CREATE NOTE
-======================= */
-
+/*
+  Creates a new note.
+*/
 export async function createNote(title, content, categoryId) {
   const response = await fetch(API_BASE_URL, {
     method: "POST",
@@ -27,7 +29,7 @@ export async function createNote(title, content, categoryId) {
     body: JSON.stringify({
       title,
       content,
-      categoryId, // 👈 KEY
+      categoryId,
     }),
   });
 
@@ -36,10 +38,9 @@ export async function createNote(title, content, categoryId) {
   }
 }
 
-/* =======================
-   UPDATES
-======================= */
-
+/*
+  Updates note title using a dedicated partial endpoint.
+*/
 export async function updateNoteTitle(id, title) {
   const response = await fetch(`${API_BASE_URL}/${id}/title`, {
     method: "PUT",
@@ -54,6 +55,9 @@ export async function updateNoteTitle(id, title) {
   }
 }
 
+/*
+  Updates note content using a dedicated partial endpoint.
+*/
 export async function updateNoteContent(id, content) {
   const response = await fetch(`${API_BASE_URL}/${id}/content`, {
     method: "PUT",
@@ -68,10 +72,9 @@ export async function updateNoteContent(id, content) {
   }
 }
 
-/* =======================
-   UPDATE CATEGORY
-======================= */
-
+/*
+  Updates note category association.
+*/
 export async function updateNoteCategory(id, categoryId) {
   const response = await fetch(`${API_BASE_URL}/${id}/category`, {
     method: "PUT",
@@ -86,10 +89,9 @@ export async function updateNoteCategory(id, categoryId) {
   }
 }
 
-/* =======================
-   DELETE
-======================= */
-
+/*
+  Permanently deletes a note.
+*/
 export async function deleteNote(id) {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
     method: "DELETE",
@@ -100,10 +102,9 @@ export async function deleteNote(id) {
   }
 }
 
-/* =======================
-   ARCHIVE / UNARCHIVE
-======================= */
-
+/*
+  Marks a note as archived.
+*/
 export async function archiveNote(id) {
   const response = await fetch(`${API_BASE_URL}/${id}/archive`, {
     method: "POST",
@@ -114,6 +115,9 @@ export async function archiveNote(id) {
   }
 }
 
+/*
+  Restores a previously archived note.
+*/
 export async function unarchiveNote(id) {
   const response = await fetch(`${API_BASE_URL}/${id}/unarchive`, {
     method: "POST",
@@ -124,10 +128,9 @@ export async function unarchiveNote(id) {
   }
 }
 
-/* =======================
-   ARCHIVED NOTES
-======================= */
-
+/*
+  Retrieves all archived notes.
+*/
 export async function getArchivedNotes() {
   const response = await fetch(`${API_BASE_URL}/archived`);
 

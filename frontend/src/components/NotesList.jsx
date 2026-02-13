@@ -1,3 +1,7 @@
+/*
+  Displays active notes list with category filter.
+  Handles selection, archive and delete actions via callbacks.
+*/
 function NotesList({
   notes,
   categories,
@@ -12,7 +16,7 @@ function NotesList({
     <div style={{ padding: "12px" }}>
       <h3 style={{ marginBottom: "8px" }}>Notes</h3>
 
-      {/* CATEGORY FILTER */}
+      {/* Category filter (client-side) */}
       <div style={{ marginBottom: "12px" }}>
         <select
           value={selectedCategoryId ?? ""}
@@ -31,6 +35,7 @@ function NotesList({
         </select>
       </div>
 
+      {/* Empty state */}
       {notes.length === 0 && <p>No notes</p>}
 
       <ul style={{ listStyle: "none", padding: 0 }}>
@@ -57,7 +62,7 @@ function NotesList({
                 cursor: "pointer",
               }}
             >
-              {/* LEFT */}
+              {/* Note summary */}
               <div style={{ flex: 1 }}>
                 <div
                   style={{
@@ -68,7 +73,7 @@ function NotesList({
                   {note.title}
                 </div>
 
-                {/* CATEGORY BADGE (READ ONLY) */}
+                {/* Category badge */}
                 <span
                   style={{
                     display: "inline-block",
@@ -84,7 +89,7 @@ function NotesList({
                 </span>
               </div>
 
-              {/* RIGHT */}
+              {/* Actions */}
               <div
                 style={{
                   display: "flex",

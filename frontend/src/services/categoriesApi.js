@@ -1,8 +1,12 @@
+/*
+  Base URL for Categories API.
+  Uses Vite environment variable for environment-based configuration.
+*/
 const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/Categories`;
 
-/* =======================
-   GET CATEGORIES
-======================= */
+/*
+  Retrieves all available categories.
+*/
 export async function getCategories() {
   const response = await fetch(API_BASE_URL);
 
@@ -13,9 +17,10 @@ export async function getCategories() {
   return await response.json();
 }
 
-/* =======================
-   CREATE CATEGORY
-======================= */
+/*
+  Creates a new category.
+  Expects an object with the category name.
+*/
 export async function createCategory(data) {
   const response = await fetch(API_BASE_URL, {
     method: "POST",
@@ -30,9 +35,9 @@ export async function createCategory(data) {
   }
 }
 
-/* =======================
-   RENAME CATEGORY
-======================= */
+/*
+  Renames an existing category by id.
+*/
 export async function renameCategory(id, data) {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
     method: "PUT",
@@ -47,9 +52,10 @@ export async function renameCategory(id, data) {
   }
 }
 
-/* =======================
-   DELETE CATEGORY
-======================= */
+/*
+  Deletes a category by id.
+  Notes associated with it remain without category.
+*/
 export async function deleteCategory(id) {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
     method: "DELETE",

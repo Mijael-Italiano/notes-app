@@ -1,0 +1,230 @@
+{
+  "name": "Telegram → Notes API",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "node-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        304
+      ],
+      "webhookId": "telegram-notes-webhook",
+      "credentials": {
+        "telegramApi": {
+          "id": "MwsN1ckxglNy8g5j",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const msg = $input.first().json.message;\nconst text = (msg?.text || '').trim();\nconst chatId = String(msg.chat.id);\nconst base = 'http://host.docker.internal:8080/api';\n\nconst spaceIdx = text.indexOf(' ');\nconst cmd = (spaceIdx === -1 ? text : text.slice(0, spaceIdx)).toLowerCase();\nconst args = spaceIdx === -1 ? '' : text.slice(spaceIdx + 1).trim();\n\nconst direct = (reply) => [{ json: { chatId, direct: true, reply } }];\nconst http = (method, url, body = null) => [{ json: { chatId, direct: false, method, url, body, cmd } }];\n\nswitch (cmd) {\n  case '/start': case '/ayuda': case '/help':\n    return direct('📋 *Comandos:*\\n\\n`/note <título>` — nueva nota\\n`/note <título> | <contenido>` — con contenido\\n`/notas` — activas\\n`/archivadas` — archivadas\\n`/archivar <id>` — archivar\\n`/desarchivar <id>` — desarchivar\\n`/borrar <id>` — eliminar\\n`/titulo <id> <título>` — editar título\\n`/contenido <id> <texto>` — editar contenido\\n`/categorias` — listar categorías\\n`/categoria <nombre>` — crear categoría\\n`/renombrar <id> <nombre>` — renombrar\\n`/borrarcategoria <id>` — eliminar categoría\\n`/asignar <id_nota> <id_cat>` — asignar categoría');\n  case '/note': case '/nota': {\n    if (!args) return direct('Uso: `/note <título>`');\n    const [title, ...rest] = args.split('|').map(s => s.trim());\n    return http('POST', `${base}/notes`, { title, content: rest.join('|').trim() || null });\n  }\n  case '/notas': return http('GET', `${base}/notes/active`);\n  case '/archivadas': return http('GET', `${base}/notes/archived`);\n  case '/archivar': { const id = parseInt(args); if (!id) return direct('Uso: `/archivar <id>`'); return http('POST', `${base}/notes/${id}/archive`); }\n  case '/desarchivar': { const id = parseInt(args); if (!id) return direct('Uso: `/desarchivar <id>`'); return http('POST', `${base}/notes/${id}/unarchive`); }\n  case '/borrar': { const id = parseInt(args); if (!id) return direct('Uso: `/borrar <id>`'); return http('DELETE', `${base}/notes/${id}`); }\n  case '/titulo': { const m = args.match(/^(\\d+)\\s+(.+)$/); if (!m) return direct('Uso: `/titulo <id> <título>`'); return http('PUT', `${base}/notes/${m[1]}/title`, { title: m[2].trim() }); }\n  case '/contenido': { const m = args.match(/^(\\d+)\\s+(.+)$/); if (!m) return direct('Uso: `/contenido <id> <texto>`'); return http('PUT', `${base}/notes/${m[1]}/content`, { content: m[2].trim() }); }\n  case '/categorias': return http('GET', `${base}/categories`);\n  case '/categoria': { if (!args) return direct('Uso: `/categoria <nombre>`'); return http('POST', `${base}/categories`, { name: args }); }\n  case '/renombrar': { const m = args.match(/^(\\d+)\\s+(.+)$/); if (!m) return direct('Uso: `/renombrar <id> <nombre>`'); return http('PUT', `${base}/categories/${m[1]}`, { name: m[2].trim() }); }\n  case '/borrarcategoria': { const id = parseInt(args); if (!id) return direct('Uso: `/borrarcategoria <id>`'); return http('DELETE', `${base}/categories/${id}`); }\n  case '/asignar': { const m = args.match(/^(\\d+)\\s+(\\d+)$/); if (!m) return direct('Uso: `/asignar <id_nota> <id_cat>`'); return http('PUT', `${base}/notes/${m[1]}/category`, { categoryId: parseInt(m[2]) }); }\n  default: return [];\n}"
+      },
+      "id": "node-parse",
+      "name": "Parse Command",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond1",
+              "leftValue": "={{ $json.direct }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-if",
+      "name": "Direct Reply?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        448,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.reply }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "node-reply-direct",
+      "name": "Reply Direct",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        160
+      ],
+      "webhookId": "581f0fc0-c2ee-4d3b-8bed-6800ec975b9c",
+      "credentials": {
+        "telegramApi": {
+          "id": "MwsN1ckxglNy8g5j",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "={{ $json.method }}",
+        "url": "={{ $json.url }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body || {} }}",
+        "options": {}
+      },
+      "id": "node-http",
+      "name": "Call API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const parsed = $('Parse Command').item.json;\nconst { chatId, method, url, cmd } = parsed;\n\nif (method === 'GET' && url.includes('/notes')) {\n  const notes = $input.all().map(i => i.json);\n  if (!notes.length) return [{ json: { chatId, text: url.includes('archived') ? 'No tenés notas archivadas.' : 'No tenés notas activas.' } }];\n  const header = url.includes('archived') ? '📦 *Archivadas:*' : '📋 *Notas activas:*';\n  const lines = notes.map(n => {\n    const cat = n.category ? ' ['+n.category.name+']' : '';\n    const content = n.content ? '\\n   _'+n.content+'_' : '';\n    return '*#'+n.id+'*'+cat+' — '+n.title+content;\n  });\n  return [{ json: { chatId, text: header + '\\n\\n' + lines.join('\\n') } }];\n}\n\nif (method === 'GET' && url.includes('/categories')) {\n  const cats = $input.all().map(i => i.json);\n  if (!cats.length) return [{ json: { chatId, text: 'No tenés categorías.' } }];\n  return [{ json: { chatId, text: '🏷️ *Categorías:*\\n\\n' + cats.map(c => '*#'+c.id+'* — '+c.name).join('\\n') } }];\n}\n\nconst replies = {'/note':'Nota guardada ✅','/nota':'Nota guardada ✅','/archivar':'Nota archivada 📦','/desarchivar':'Nota desarchivada ✅','/borrar':'Nota eliminada 🗑️','/titulo':'Título actualizado ✅','/contenido':'Contenido actualizado ✅','/categoria':'Categoría creada ✅','/renombrar':'Categoría renombrada ✅','/borrarcategoria':'Categoría eliminada 🗑️','/asignar':'Categoría asignada ✅'};\nreturn [{ json: { chatId, text: replies[cmd] || '✅' } }];"
+      },
+      "id": "node-format",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "node-reply-api",
+      "name": "Reply API",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        448
+      ],
+      "webhookId": "93d20cb8-1770-4ffc-932c-39f39a5b0565",
+      "credentials": {
+        "telegramApi": {
+          "id": "MwsN1ckxglNy8g5j",
+          "name": "Telegram Bot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Command": {
+      "main": [
+        [
+          {
+            "node": "Direct Reply?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Direct Reply?": {
+      "main": [
+        [
+          {
+            "node": "Reply Direct",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call API": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Reply API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "a0950349-3ae3-4b56-96e1-b5a7a242e3e0",
+  "meta": {
+    "instanceId": "9b0adf7f24862936ddf4b3604c2e373324a7fd83ef6e7c6c56139af06c5126b2"
+  },
+  "id": "37N6EGNTDLgfuE7P",
+  "tags": []
+}
